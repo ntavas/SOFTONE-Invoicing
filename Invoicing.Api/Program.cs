@@ -3,6 +3,7 @@ using Invoicing.Api.Responses;
 using Invoicing.Application;
 using Invoicing.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +32,45 @@ builder.Services.Configure<ApiBehaviorOptions>(opt =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Invoicing API", Version = "v1" });
+
+    // Dev-only: pass company id via header so you can test easily in Swagger
+    c.AddSecurityDefinition("DemoCompany", new OpenApiSecurityScheme
+    {
+        Description = "Dev-only header. Enter a company id (e.g., 1).",
+        Name = "X-Demo-CompanyId",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    // Bearer (for later)
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer 12345abcdef'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+
+    // Make the DemoCompany header required globally (for now).
+    // Remove this when real auth middleware is in place, or switch to per-action requirements.
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "DemoCompany" }
+            },
+            Array.Empty<string>()
+        }
+    });
+
+    // Do NOT add Bearer as global yet, or every endpoint will demand a token before we’ve implemented auth.
+});
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

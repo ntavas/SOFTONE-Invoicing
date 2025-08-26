@@ -20,7 +20,8 @@ public static class DependencyInjection
                 .UseSnakeCaseNamingConvention());
         
         services.AddScoped<IUserRepository, UserRepository>();
-        
+        services.AddScoped<ICompanyRepository, CompanyRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         return services;
     }
 }

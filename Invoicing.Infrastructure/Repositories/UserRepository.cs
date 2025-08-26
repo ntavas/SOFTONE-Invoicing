@@ -2,11 +2,25 @@ using Invoicing.Application.Repositories;
 using Invoicing.Domain.Entities;
 using Invoicing.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Invoicing.Infrastructure.Repositories;
 
-public sealed class UserRepository(InvoicingDbContext db) : IUserRepository
+/// <summary>EF Core implementation of user queries.</summary>
+public sealed class UserRepository : IUserRepository
 {
-    public Task<List<User>> GetAllAsync(CancellationToken ct = default) =>
-        db.Users.AsNoTracking().ToListAsync(ct);
+    private readonly InvoicingDbContext _dbContext;
+    private readonly ILogger<UserRepository> _logger;
+    
+    public UserRepository(InvoicingDbContext db, ILogger<UserRepository> logger)
+    {
+        _dbContext = db;
+        _logger = logger;
+    }
+    
+    public Task<List<User>> GetAllAsync(CancellationToken ct = default)
+    {
+        _logger.LogDebug("Querying all users.");
+        return _dbContext.Users.AsNoTracking().ToListAsync(ct);
+    }
 }

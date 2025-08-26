@@ -16,6 +16,12 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
         {
             e.ToTable("company");
             e.HasKey(x => x.CompanyId).HasName("pk_company");
+            
+            e.Property(c => c.CompanyId)
+                .HasColumnName("company_id")
+                .ValueGeneratedOnAdd()
+                .UseIdentityByDefaultColumn();
+            
             e.Property(x => x.Name).IsRequired().HasMaxLength(200);
             e.Property(x => x.ApiTokenHash).HasColumnType("bytea");
             e.Property(x => x.IsActive).HasDefaultValue(true);
@@ -32,6 +38,12 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
         {
             e.ToTable("users");
             e.HasKey(x => x.UserId).HasName("pk_user");
+            
+            e.Property(u => u.UserId)
+                .HasColumnName("user_id")
+                .ValueGeneratedOnAdd()                 
+                .UseIdentityByDefaultColumn();
+            
             e.Property(x => x.DisplayName).HasMaxLength(200);
             e.Property(x => x.Email).HasMaxLength(320);
             e.Property(x => x.IsActive).HasDefaultValue(true);
@@ -49,7 +61,10 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
         b.Entity<Invoice>(e =>
         {
             e.ToTable("invoice");
-            e.HasKey(x => x.InvoiceId).HasName("pk_invoice");
+            e.Property(i => i.InvoiceId)
+                .HasColumnName("invoice_id")
+                .ValueGeneratedOnAdd()                 
+                .UseIdentityByDefaultColumn(); 
 
             e.Property(x => x.InvoiceId).ValueGeneratedOnAdd();
             e.Property(x => x.DateIssued);

@@ -31,7 +31,7 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       Logging__LogLevel__Default: Debug
       Logging__LogLevel__Microsoft: Warning
-      ConnectionStrings__Postgres: "Host=host.docker.internal;Port=5432;Database=invoicing_db;Username=postgres;Password=R00tPSPassw0rd!"
+      ConnectionStrings__Postgres: "Host=host.docker.internal;Port=5432;Database=invoicing_db;Username=postgres;Password=R00tPSPassw0rd!;Include Error Detail=true;"
     ports:
       - "8080:8080"
 
