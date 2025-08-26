@@ -51,7 +51,7 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
             e.ToTable("invoice");
             e.HasKey(x => x.InvoiceId).HasName("pk_invoice");
 
-            e.Property(x => x.InvoiceId).HasMaxLength(64).IsUnicode(false);
+            e.Property(x => x.InvoiceId).ValueGeneratedOnAdd();
             e.Property(x => x.DateIssued);
             e.Property(x => x.NetAmount).HasColumnType("numeric(18,2)");
             e.Property(x => x.VatAmount).HasColumnType("numeric(18,2)");

@@ -2,8 +2,8 @@ namespace Invoicing.Domain.Entities;
 
 public class User
 {
-    public Guid UserId { get; set; }
-    public Guid CompanyId { get; set; }
+    public int UserId { get; set; }
+    public int CompanyId { get; set; }
     public string? DisplayName { get; set; }
     public string? Email { get; set; }
     public bool IsActive { get; set; } = true;

@@ -8,7 +8,6 @@
 
     <ItemGroup>
         <Folder Include="Persistence\Migrations\" />
-        <Folder Include="Repositories\" />
         <Folder Include="Security\" />
         <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj" />
         <ProjectReference Include="..\Invoicing.Domain\Invoicing.Domain.csproj" />
