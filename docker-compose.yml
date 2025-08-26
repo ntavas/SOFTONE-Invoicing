@@ -28,7 +28,9 @@ services:
         condition: service_healthy
     environment:
       ASPNETCORE_URLS: "http://+:8080"
-      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_ENVIRONMENT: Development
+      Logging__LogLevel__Default: Debug
+      Logging__LogLevel__Microsoft: Warning
       ConnectionStrings__Postgres: "Host=host.docker.internal;Port=5432;Database=invoicing_db;Username=postgres;Password=R00tPSPassw0rd!"
     ports:
       - "8080:8080"
