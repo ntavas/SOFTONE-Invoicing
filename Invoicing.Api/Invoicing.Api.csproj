@@ -10,6 +10,12 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.18"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
+        <ProjectReference Include="..\Invoicing.Infrastructure\Invoicing.Infrastructure.csproj" />
+        <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*" PrivateAssets="All" />
     </ItemGroup>
 
     <ItemGroup>

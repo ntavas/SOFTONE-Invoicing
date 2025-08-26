@@ -7,9 +7,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Persistence\" />
-      <Folder Include="Repositories\" />
-      <Folder Include="Security\" />
+        <Folder Include="Persistence\Migrations\" />
+        <Folder Include="Repositories\" />
+        <Folder Include="Security\" />
+        <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj" />
+        <ProjectReference Include="..\Invoicing.Domain\Invoicing.Domain.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="EFCore.NamingConventions" Version="8.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.*" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.*" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.*" PrivateAssets="All" />
     </ItemGroup>
 
 </Project>

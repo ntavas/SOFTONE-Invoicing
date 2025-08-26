@@ -1,23 +1,28 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["Invoicing.Api/Invoicing.Api.csproj", "Invoicing.Api/"]
-RUN dotnet restore "Invoicing.Api/Invoicing.Api.csproj"
-COPY . .
-WORKDIR "/src/Invoicing.Api"
-RUN dotnet build "./Invoicing.Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Invoicing.Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# copy sln + csproj for restore caching
+COPY Invoicing.sln ./
+COPY Invoicing.Api/Invoicing.Api.csproj Invoicing.Api/
+COPY Invoicing.Domain/Invoicing.Domain.csproj Invoicing.Domain/
+COPY Invoicing.Application/Invoicing.Application.csproj Invoicing.Application/
+COPY Invoicing.Infrastructure/Invoicing.Infrastructure.csproj Invoicing.Infrastructure/
 
-FROM base AS final
+RUN dotnet restore Invoicing.Api/Invoicing.Api.csproj
+
+# copy the rest and publish
+COPY Invoicing.Api/ Invoicing.Api/
+COPY Invoicing.Domain/ Invoicing.Domain/
+COPY Invoicing.Application/ Invoicing.Application/
+COPY Invoicing.Infrastructure/ Invoicing.Infrastructure/
+
+WORKDIR /src/Invoicing.Api
+RUN dotnet publish -c Release -o /app/publish
+
+# ---------- runtime ----------
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Invoicing.Api.dll"]

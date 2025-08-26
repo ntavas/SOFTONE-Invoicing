@@ -20,3 +20,4 @@
 *.user
 *.rsuser
 *.suo
+pg_data/

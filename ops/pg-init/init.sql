@@ -1,0 +1,46 @@
+-- company
+CREATE TABLE IF NOT EXISTS company (
+    company_id       uuid          PRIMARY KEY,
+    name             varchar(200)  NOT NULL,
+    api_token_hash   bytea         NULL,
+    is_active        boolean       NOT NULL DEFAULT true
+    );
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_company_name
+    ON company(name);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_company_api_token_hash
+    ON company(api_token_hash)
+    WHERE api_token_hash IS NOT NULL;
+
+-- users
+CREATE TABLE IF NOT EXISTS users (
+    user_id      uuid          PRIMARY KEY,
+    company_id   uuid          NOT NULL REFERENCES company(company_id) ON DELETE CASCADE,
+    display_name varchar(200)  NULL,
+    email        varchar(320)  NULL,
+    is_active    boolean       NOT NULL DEFAULT true
+    );
+
+CREATE INDEX IF NOT EXISTS ix_user_company_id ON users(company_id);
+
+-- invoice
+CREATE TABLE IF NOT EXISTS invoice (
+    invoice_id              varchar(64)   PRIMARY KEY,
+    date_issued             date          NOT NULL,
+    net_amount              numeric(18,2) NOT NULL,
+    vat_amount              numeric(18,2) NOT NULL,
+    description             varchar(1000) NULL,
+    company_id              uuid          NOT NULL REFERENCES company(company_id) ON DELETE NO ACTION,
+    counterparty_company_id uuid          NOT NULL REFERENCES company(company_id) ON DELETE NO ACTION,
+    CONSTRAINT ck_invoice_non_negative CHECK (net_amount >= 0 AND vat_amount >= 0)
+    );
+
+CREATE INDEX IF NOT EXISTS ix_invoice_sent
+    ON invoice(company_id, counterparty_company_id, date_issued);
+
+CREATE INDEX IF NOT EXISTS ix_invoice_received
+    ON invoice(counterparty_company_id, company_id, date_issued);
+
+CREATE INDEX IF NOT EXISTS ix_invoice_date_issued
+    ON invoice(date_issued);
