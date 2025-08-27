@@ -12,6 +12,9 @@ namespace Invoicing.Application.Validators;
 /// </summary>
 public static class InvoiceValidator
 {
+    // Max precision/scale for EF Core decimal(18,2)
+    private static readonly decimal Max18_2 = 9_999_999_999_999_999.99m;
+    
     public static List<Error> ValidateCreateInput(CreateInvoiceRequest req, int issuerCompanyId)
     {
         var errors = new List<Error>();
@@ -21,6 +24,9 @@ public static class InvoiceValidator
 
         if (req.VatAmount < 0)
             errors.Add(Error.Validation(nameof(req.VatAmount), "Must be >= 0"));
+        
+        if (req.NetAmount + req.VatAmount > Max18_2)
+            errors.Add(Error.Validation("TotalAmount", $"Sum of net and VAT cannot exceed {Max18_2:N2}"));
 
         if (req.CounterpartyCompanyId == issuerCompanyId)
             errors.Add(Error.Validation(nameof(req.CounterpartyCompanyId),

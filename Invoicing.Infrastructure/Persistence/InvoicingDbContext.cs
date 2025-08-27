@@ -71,6 +71,12 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
             e.Property(x => x.NetAmount).HasColumnType("numeric(18,2)");
             e.Property(x => x.VatAmount).HasColumnType("numeric(18,2)");
             e.Property(x => x.Description).HasMaxLength(1000);
+            
+            e.Property(i => i.TotalAmount)
+                .HasColumnName("total_amount")
+                .HasColumnType("numeric(18,2)")
+                .HasComputedColumnSql("net_amount + vat_amount", stored: true)
+                .ValueGeneratedOnAddOrUpdate();
 
             e.HasOne<Company>().WithMany()
              .HasForeignKey(x => x.CompanyId)

@@ -51,7 +51,8 @@ public class InvoicesControllerIntegrationTests : IClassFixture<PostgresFixture>
             // issuer is company 1 (from token)
             CounterpartyCompanyId = _counterPartyId,
             DateIssued = new DateOnly(2025, 08, 26),
-            NetAmount = 100, VatAmount = 24,
+            NetAmount = 100, 
+            VatAmount = 24,
             Description = "integration test"
         };
 
@@ -61,6 +62,7 @@ public class InvoicesControllerIntegrationTests : IClassFixture<PostgresFixture>
         var envelope = await resp.Content.ReadFromJsonAsync<ApiEnvelope<InvoiceDto>>();
         envelope!.Success.Should().BeTrue();
         envelope.Data!.CompanyId.Should().Be(1);
+        envelope.Data!.TotalAmount.Should().Be(body.NetAmount + body.VatAmount);
         envelope.Data.CounterpartyCompanyId.Should().Be(2);
         envelope.Data.InvoiceId.Should().NotBe(null);
         envelope.Data.InvoiceId.Should().BeGreaterThan(0);

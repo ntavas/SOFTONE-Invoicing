@@ -7,5 +7,6 @@ public sealed record InvoiceDto(
     DateOnly DateIssued,
     decimal NetAmount,
     decimal VatAmount,
+    decimal TotalAmount,
     string? Description
 );

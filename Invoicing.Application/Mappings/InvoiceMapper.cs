@@ -16,6 +16,7 @@ public static class InvoiceMapper
             x.DateIssued,
             x.NetAmount,
             x.VatAmount,
+            x.TotalAmount,
             x.Description
         );
 
