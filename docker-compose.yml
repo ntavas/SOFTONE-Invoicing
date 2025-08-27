@@ -19,9 +19,7 @@ services:
       retries: 30
 
   api:
-    build:
-      context: .
-      dockerfile: Invoicing.Api/Dockerfile
+    image: ntavas/invoicing-api:1.0.0
     container_name: invoicing-api
     depends_on:
       postgres:

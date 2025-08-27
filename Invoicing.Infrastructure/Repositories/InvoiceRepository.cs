@@ -25,7 +25,7 @@ public sealed class InvoiceRepository : IInvoiceRepository
 
         await _dbContext.Invoices.AddAsync(entity, ct);
         await _dbContext.SaveChangesAsync(ct);
-        return entity; // InvoiceId populated by identity
+        return entity;
     }
 
     public Task<List<Invoice>> GetInvoicesSentAsync(
