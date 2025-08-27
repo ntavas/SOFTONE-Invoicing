@@ -25,27 +25,14 @@ public sealed class InvoicesController : ControllerBase
         _logger  = logger;
     }
 
-    /// <summary>
-    /// TEMP helper.<br/>
-    /// TODO: Remove when auth middleware is in place.<br/>
-    /// </summary>
     private bool TryGetAuthenticatedCompanyId(out int companyId)
     {
-        if (HttpContext.Items.TryGetValue("CompanyId", out var v) && v is int idFromMiddleware)
+        if (HttpContext.Items.TryGetValue("CompanyId", out var v) && v is int id)
         {
-            companyId = idFromMiddleware;
+            companyId = id;
             return true;
         }
-
-        // Dev/testing only: header override. Remove when auth middleware lands.
-        if (Request.Headers.TryGetValue("X-Demo-CompanyId", out var header) &&
-            int.TryParse(header, out var idFromHeader))
-        {
-            companyId = idFromHeader;
-            return true;
-        }
-
-        companyId = default;
+        companyId = 0;
         return false;
     }
 
