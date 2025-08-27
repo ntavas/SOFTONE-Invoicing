@@ -67,7 +67,7 @@ public sealed class ApiKeyAuthMiddleware
             hash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
 
         var company = await companies.GetByApiTokenHashAsync(hash, ctx.RequestAborted);
-        if (company is null)
+        if (company == null)
         {
             _logger.LogInformation("Auth failed: invalid token (traceId={TraceId})", ctx.TraceIdentifier);
             await WriteError(ctx, StatusCodes.Status401Unauthorized, ErrorCatalog.Unauthorized, "Invalid token.");

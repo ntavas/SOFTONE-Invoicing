@@ -2,6 +2,7 @@ using Invoicing.Api.Extensions;
 using Invoicing.Api.Responses;
 using Invoicing.Application.DTOs;
 using Invoicing.Application.Services.Interfaces;
+using Invoicing.Domain.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Invoicing.Api.Controllers;
@@ -14,12 +15,12 @@ namespace Invoicing.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/invoice")]
-public sealed class InvoicesController : ControllerBase
+public sealed class InvoicesControllerIntegration : ControllerBase
 {
     private readonly IInvoiceService _service;
-    private readonly ILogger<InvoicesController> _logger;
+    private readonly ILogger<InvoicesControllerIntegration> _logger;
 
-    public InvoicesController(IInvoiceService service, ILogger<InvoicesController> logger)
+    public InvoicesControllerIntegration(IInvoiceService service, ILogger<InvoicesControllerIntegration> logger)
     {
         _service = service;
         _logger  = logger;
@@ -45,7 +46,7 @@ public sealed class InvoicesController : ControllerBase
         if (!TryGetAuthenticatedCompanyId(out var issuerCompanyId))
         {
             var resp = ApiResponse<InvoiceDto>.Fail(
-                new[] { new ApiError("unauthorized", "Missing company context. Provide a valid token or X-Demo-CompanyId for local testing.") },
+                new[] { new ApiError(ErrorCatalog.Unauthorized, "Missing company context. Provide a valid token or X-Demo-CompanyId for local testing.") },
                 HttpContext.TraceIdentifier);
             return Unauthorized(resp);
         }
@@ -68,7 +69,7 @@ public sealed class InvoicesController : ControllerBase
         if (!TryGetAuthenticatedCompanyId(out var companyId))
         {
             var resp = ApiResponse<IReadOnlyList<InvoiceDto>>.Fail(
-                new[] { new ApiError("unauthorized", "Missing company context.") },
+                new[] { new ApiError(ErrorCatalog.Unauthorized, "Missing company context.") },
                 HttpContext.TraceIdentifier);
             return Unauthorized(resp);
         }
@@ -98,7 +99,7 @@ public sealed class InvoicesController : ControllerBase
         if (!TryGetAuthenticatedCompanyId(out var companyId))
         {
             var resp = ApiResponse<IReadOnlyList<InvoiceDto>>.Fail(
-                new[] { new ApiError("unauthorized", "Missing company context.") },
+                new[] { new ApiError(ErrorCatalog.Unauthorized, "Missing company context.") },
                 HttpContext.TraceIdentifier);
             return Unauthorized(resp);
         }

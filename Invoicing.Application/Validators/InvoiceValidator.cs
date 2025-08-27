@@ -5,16 +5,13 @@ using Invoicing.Domain.Common;
 namespace Invoicing.Application.Validators;
 
 /// <summary>
-/// Centralizes rules for creating an invoice so the service stays readable.
-/// Split into:
-///  - input checks (no DB)
-///  - DB-backed checks (existence/active flags)
+/// Centralizes rules for creating an invoice so the service stays readable.<br/>
+/// Split into:<br/>
+///  - input checks (no DB)<br/>
+///  - DB-backed checks (existence)
 /// </summary>
 public static class InvoiceValidator
 {
-    /// <summary>
-    /// Pure input/business rules that don't need the database.
-    /// </summary>
     public static List<Error> ValidateCreateInput(CreateInvoiceRequest req, int issuerCompanyId)
     {
         var errors = new List<Error>();
@@ -32,23 +29,16 @@ public static class InvoiceValidator
         return errors;
     }
 
-    /// <summary>
-    /// Checks that require DB lookups. Sequential on purpose.
-    /// </summary>
-    public static async Task<List<Error>> ValidateCreateDbAsync(ICompanyRepository companies, int issuerCompanyId, int counterpartyCompanyId, CancellationToken ct)
+
+    public static async Task<Error?> ValidateIssuerAsync(ICompanyRepository companies, int issuerCompanyId, CancellationToken ct)
     {
-        var errors = new List<Error>();
-
-        // issuer must exist
-        var issuerExists = await companies.ExistsAsync(issuerCompanyId, ct);
-        if (!issuerExists)
-            errors.Add(Error.NotFound("company", "Authenticated company does not exist."));
-
-        // counterparty must exist and be active
-        var counterparty = await companies.GetByIdActiveAsync(counterpartyCompanyId, ct);
-        if (counterparty is null)
-            errors.Add(Error.NotFound("company", "Counterparty company not found."));
-
-        return errors;
+        var exists = await companies.ExistsAsync(issuerCompanyId, ct);
+        return exists ? null : Error.NotFound("company", "Authenticated company does not exist.");
+    }
+    
+    public static async Task<Error?> ValidateCounterpartyAsync(ICompanyRepository companies, int counterpartyCompanyId, CancellationToken ct)
+    {
+        var cp = await companies.GetByIdActiveAsync(counterpartyCompanyId, ct);
+        return cp != null ? null : Error.NotFound("company", "Counterparty company not found.");
     }
 }

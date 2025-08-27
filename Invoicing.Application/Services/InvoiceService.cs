@@ -3,7 +3,6 @@ using Invoicing.Application.Mappings;
 using Invoicing.Application.Repositories;
 using Invoicing.Application.Validators;
 using Invoicing.Domain.Common;
-using Invoicing.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace Invoicing.Application.Services;
@@ -45,15 +44,13 @@ public sealed class InvoiceService : Interfaces.IInvoiceService
             return Result<InvoiceDto>.Failure(errors);
         }
         
-        var dbErrors = await InvoiceValidator.ValidateCreateDbAsync(
-            _companyRepository, issuerCompanyId, request.CounterpartyCompanyId, ct);
+        var issuerErr = await InvoiceValidator.ValidateIssuerAsync(_companyRepository, issuerCompanyId, ct);
+        if (issuerErr != null)
+            return Result<InvoiceDto>.Failure(issuerErr);
 
-        if (dbErrors.Count > 0)
-        {
-            _logger.LogInformation("Create invoice rejected (DB validation): {Count} error(s)", dbErrors.Count);
-            return Result<InvoiceDto>.Failure(dbErrors);
-        }
-        
+        var cpErr = await InvoiceValidator.ValidateCounterpartyAsync(_companyRepository, request.CounterpartyCompanyId, ct);
+        if (cpErr != null)
+            return Result<InvoiceDto>.Failure(cpErr);   
         
         var entity = request.ToEntity(issuerCompanyId);
         entity = await _invoiceRepository.AddAsync(entity, ct);

@@ -1,9 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+        <PackageReference Include="xunit" Version="2.8.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1" />
+        <PackageReference Include="FluentAssertions" Version="6.12.0" />
+        <PackageReference Include="NSubstitute" Version="5.1.0" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.8" />
+        <PackageReference Include="Testcontainers" Version="3.8.0" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="3.8.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.19" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Invoicing.Api\Invoicing.Api.csproj" />
+        <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj" />
+        <ProjectReference Include="..\Invoicing.Domain\Invoicing.Domain.csproj" />
+        <ProjectReference Include="..\Invoicing.Infrastructure\Invoicing.Infrastructure.csproj" />
+    </ItemGroup>
 </Project>

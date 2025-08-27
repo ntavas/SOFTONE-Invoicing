@@ -69,4 +69,4 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 await app.RunAsync();
 
-public static partial class Program { }
+public abstract partial class Program { }

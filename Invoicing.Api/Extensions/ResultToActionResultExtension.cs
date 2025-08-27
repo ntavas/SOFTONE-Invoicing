@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Invoicing.Api.Extensions;
 
 /// <summary>
-/// Turns a domain/application Result{T} into an HTTP response with our standard envelope.
+/// Turns a domain/application Result{T} into an HTTP response with the standard envelope.
 /// </summary>
 public static class ResultToActionResultExtension
 {
@@ -41,17 +41,24 @@ public static class ResultToActionResultExtension
         };
     }
 
-    // Small, predictable mapping from portable error codes to HTTP status.
+    // Small mapping from portable error codes to HTTP status.
     private static int MapStatus(IReadOnlyList<Error> errors)
     {
         foreach (var e in errors)
         {
             var code = e.Code.ToLowerInvariant();
-            if (code is "unauthorized") return 401;
-            if (code is "forbidden")    return 403;
-            if (code.Contains("not_found")) return 404;
-            if (code.Contains("conflict"))  return 409;
-            if (code is "validation")  return 400;
+            switch (code)
+            {
+                case ErrorCatalog.Unauthorized:
+                    return 401;
+                case ErrorCatalog.Forbidden:
+                    return 403;
+                case ErrorCatalog.Validation:
+                    return 400;
+            }
+
+            if (code.Contains(ErrorCatalog.NotFound)) return 404;
+            if (code.Contains(ErrorCatalog.Conflict))  return 409;
         }
         return 400;
     }

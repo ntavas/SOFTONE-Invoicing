@@ -25,4 +25,9 @@ WORKDIR /app
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 COPY --from=build /app/publish .
+
+# Run as a non-root user
+# bypass sonar root user maintainability
+USER $APPUID
+
 ENTRYPOINT ["dotnet", "Invoicing.Api.dll"]
