@@ -9,10 +9,10 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
     public DbSet<User> Users => Set<User>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
 
-    protected override void OnModelCreating(ModelBuilder b)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // company entity
-        b.Entity<Company>(e =>
+        modelBuilder.Entity<Company>(e =>
         {
             e.ToTable("company");
             e.HasKey(x => x.CompanyId).HasName("pk_company");
@@ -34,7 +34,7 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
         });
 
         // users entity
-        b.Entity<User>(e =>
+        modelBuilder.Entity<User>(e =>
         {
             e.ToTable("users");
             e.HasKey(x => x.UserId).HasName("pk_user");
@@ -58,7 +58,7 @@ public sealed class InvoicingDbContext(DbContextOptions<InvoicingDbContext> opti
         });
 
         // invoice entity
-        b.Entity<Invoice>(e =>
+        modelBuilder.Entity<Invoice>(e =>
         {
             e.ToTable("invoice");
             e.Property(i => i.InvoiceId)

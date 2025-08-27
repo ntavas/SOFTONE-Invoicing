@@ -37,6 +37,6 @@ public sealed class Result<T> : Result
     }
 
     public static Result<T> Success(T value) => new(true, value);
-    public static Result<T> Failure(params Error[] errors) => new(false, default, errors);
-    public static Result<T> Failure(IEnumerable<Error> errors) => new(false, default, errors);
+    public new static Result<T> Failure(params Error[] errors) => new(false, default, errors);
+    public new static Result<T> Failure(IEnumerable<Error> errors) => new(false, default, errors);
 }

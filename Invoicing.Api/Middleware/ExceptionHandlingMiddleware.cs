@@ -1,5 +1,6 @@
 using System.Net;
 using Invoicing.Api.Responses;
+using Invoicing.Domain.Common;
 
 namespace Invoicing.Api.Middleware;
 /// <summary>
@@ -33,7 +34,7 @@ public sealed class ExceptionHandlingMiddleware
             ctx.Response.ContentType = "application/json";
 
             var body = ApiResponse<object>.Fail(
-                new[] { new ApiError("internal_error", "An unexpected error occurred.") },
+                new[] { new ApiError(ErrorCatalog.Internal, "An unexpected error occurred.") },
                 traceId
             );
 

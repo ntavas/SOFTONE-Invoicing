@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Invoicing.Api.Responses;
 using Invoicing.Application.Repositories;
+using Invoicing.Domain.Common;
 
 namespace Invoicing.Api.Middleware;
 
@@ -40,7 +41,7 @@ public sealed class ApiKeyAuthMiddleware
         if (!ctx.Request.Headers.TryGetValue("Authorization", out var authHeader) ||
             string.IsNullOrWhiteSpace(authHeader))
         {
-            await WriteError(ctx, StatusCodes.Status401Unauthorized, "unauthorized", "Missing Authorization header.");
+            await WriteError(ctx, StatusCodes.Status401Unauthorized, ErrorCatalog.Unauthorized, "Missing Authorization header.");
             return;
         }
 
@@ -49,7 +50,7 @@ public sealed class ApiKeyAuthMiddleware
         const string prefix = "Bearer ";
         if (!header.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
         {
-            await WriteError(ctx, StatusCodes.Status401Unauthorized, "unauthorized",
+            await WriteError(ctx, StatusCodes.Status401Unauthorized, ErrorCatalog.Unauthorized,
                 "Authorization header must be 'Bearer <token>'.");
             return;
         }
@@ -57,19 +58,19 @@ public sealed class ApiKeyAuthMiddleware
         var token = header.Substring(prefix.Length).Trim();
         if (string.IsNullOrEmpty(token))
         {
-            await WriteError(ctx, StatusCodes.Status401Unauthorized, "unauthorized", "Bearer token is empty.");
+            await WriteError(ctx, StatusCodes.Status401Unauthorized, ErrorCatalog.Unauthorized, "Bearer token is empty.");
             return;
         }
 
         byte[] hash;
         using (var sha = SHA256.Create())
-            hash = sha.ComputeHash(Encoding.UTF8.GetBytes(token));
+            hash = SHA256.HashData(Encoding.UTF8.GetBytes(token));
 
         var company = await companies.GetByApiTokenHashAsync(hash, ctx.RequestAborted);
         if (company is null)
         {
             _logger.LogInformation("Auth failed: invalid token (traceId={TraceId})", ctx.TraceIdentifier);
-            await WriteError(ctx, StatusCodes.Status401Unauthorized, "unauthorized", "Invalid token.");
+            await WriteError(ctx, StatusCodes.Status401Unauthorized, ErrorCatalog.Unauthorized, "Invalid token.");
             return;
         }
 
@@ -77,7 +78,7 @@ public sealed class ApiKeyAuthMiddleware
         {
             _logger.LogInformation("Auth rejected: inactive company {CompanyId} (traceId={TraceId})",
                 company.CompanyId, ctx.TraceIdentifier);
-            await WriteError(ctx, StatusCodes.Status403Forbidden, "forbidden", "Company is inactive.");
+            await WriteError(ctx, StatusCodes.Status403Forbidden, ErrorCatalog.Forbidden, "Company is inactive.");
             return;
         }
 

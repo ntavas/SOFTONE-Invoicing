@@ -21,3 +21,5 @@
 *.rsuser
 *.suo
 pg_data/
+.sonarqube/
+coverage.xml
