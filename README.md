@@ -11,7 +11,7 @@ SOFTONE-Invoicing is a coding exercise for SOFTONE demonstrating a modern web AP
 
 ---
 
-## Technology Stack 🛠️
+## Technology Stack
 * **.NET 8 (ASP.NET Core Web API)**: For building the robust Web API.
 * **Entity Framework Core**: For data access and persistence.
 * **PostgreSQL**: As the relational database.
